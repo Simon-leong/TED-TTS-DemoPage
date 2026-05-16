@@ -458,7 +458,6 @@ figcaption {
 .ex-ref-unit--text {
   font-size: .75rem;
   font-style: italic;
-  color: var(--muted);
   line-height: 1.5;
   padding: 4px 0;
   flex: 1;
