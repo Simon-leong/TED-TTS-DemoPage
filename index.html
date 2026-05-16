@@ -101,48 +101,44 @@
     <section class="card" id="figures">
       <h2><span class="section-num">02</span> Framework Overview</h2>
 
-      <!-- Fig 1 & 2 -->
       <div class="fig-block">
-        <p class="fig-block-title">Task Definition &amp; Architecture Overview (Fig. 1 &amp; 2)</p>
-        <div class="figure-grid">
-          <figure>
-            <!-- PLACEHOLDER: replace src with imgs/intro.png -->
+        <p class="fig-block-title">Task Definition &amp; Architecture Overview (Fig. 1 · 2 · 3)</p>
+
+        <!-- Row 1: Fig 1 + Fig 3 side by side -->
+        <div class="fig-row-13">
+          <figure class="fig-natural">
             <img src="imgs/intro.png" alt="Fig. 1 — Task Definition" />
             <figcaption>
               <strong>Fig. 1</strong> — Overview of our training-free framework for intra-utterance emotion and duration
-              control,
-              where the <span style="color:#237804;font-weight:600;">green</span>, <span
-                style="color:#b42318;font-weight:600;">red</span>, and <span
-                style="color:#096dd9;font-weight:600;">blue</span>
+              control, where the <span style="color:#237804;font-weight:600;">green</span>,
+              <span style="color:#b42318;font-weight:600;">red</span>, and
+              <span style="color:#096dd9;font-weight:600;">blue</span>
               regions denote three segments with different emotion and duration settings within the same utterance.
             </figcaption>
           </figure>
-          <figure>
-            <!-- PLACEHOLDER: replace with imgs/Method.png -->
+          <figure class="fig-natural">
+            <img src="imgs/MSA.png" alt="Fig. 3 — Monotonic Stream Alignment" />
+            <figcaption>
+              <strong>Fig. 3</strong> — Detailed illustration of the MSA algorithm in segment-aware emotion
+              conditioning. From top to bottom: the MSA algorithm, alignment result, and 2D causal attention mask
+              visualization. MSA tracks a Bayesian belief distribution over text positions at each decoding step to
+              enable accurate mask transition scheduling.
+            </figcaption>
+          </figure>
+        </div>
+
+        <!-- Row 2: Fig 2 full width, 80% centred -->
+        <div class="fig-row-2">
+          <figure class="fig-natural">
             <img src="imgs/Method.png" alt="Fig. 2 — Architecture Overview" />
             <figcaption>
-              <strong>Fig. 2</strong> — Illustration of the segment transition from the <span
-                style="color:#b42318;font-weight:600;">red</span> to the <span
-                style="color:#096dd9;font-weight:600;">blue</span> segment
+              <strong>Fig. 2</strong> — Illustration of the segment transition from the
+              <span style="color:#b42318;font-weight:600;">red</span> to the
+              <span style="color:#096dd9;font-weight:600;">blue</span> segment
               via segment-aware duration steering (left) and segment-aware emotion conditioning (right).
             </figcaption>
           </figure>
         </div>
-      </div>
-
-      <!-- Fig 3 -->
-      <div class="fig-block">
-        <p class="fig-block-title">Monotonic Stream Alignment Detail (Fig. 3)</p>
-        <figure>
-          <!-- PLACEHOLDER: replace with imgs/fig3.png -->
-          <img src="imgs/MSA.png" alt="Fig. 3 — Monotonic Stream Alignment" />
-          <figcaption>
-            <strong>Fig. 3</strong> — Detailed illustration of the MSA algorithm in segment-aware emotion conditioning.
-            From top to bottom: the MSA algorithm, alignment result, and 2D causal attention mask visualization.
-            MSA tracks a Bayesian belief distribution over text positions at each decoding step to enable accurate mask
-            transition scheduling.
-          </figcaption>
-        </figure>
       </div>
     </section>
 
@@ -237,15 +233,16 @@
         </div>
       </div>
 
-      <!-- Fig 5 -->
-      <figure>
-        <!-- PLACEHOLDER: replace with imgs/fig5.png -->
-        <img src="imgs/dataset.png" alt="Fig. 4 — Dataset Statistics" />
-        <figcaption>
-          <strong>Fig. 4</strong> — MED-TTS statistics: emotion category distribution, segment count distribution, and
-          language breakdown.
-        </figcaption>
-      </figure>
+      <!-- Dataset figure: 60% centred -->
+      <div class="fig-centered">
+        <figure class="fig-natural">
+          <img src="imgs/dataset.png" alt="Fig. 4 — Dataset Statistics" />
+          <figcaption>
+            <strong>Fig. 4</strong> — MED-TTS statistics: emotion category distribution, segment count distribution,
+            and language breakdown.
+          </figcaption>
+        </figure>
+      </div>
 
       <div class="license-note">
         <span class="license-icon">⚠️</span>
@@ -410,12 +407,10 @@
             </tbody>
           </table>
         </div>
-        <p class="results-note">↓ lower is better · ↑ higher is better · Subjective scores (SMOS/NMOS/EMOS) evaluated by
-          15 listeners, 95% CI via t-test.
-          <strong>Bold</strong> = best · <span class="ul">Underline</span> = second best.
-          All baselines synthesize segments independently and concatenate; our method generates the full utterance in a
-          single autoregressive pass.
-        </p>
+        <p class="results-note">↓ lower is better · ↑ higher is better · Subjective scores (SMOS/NMOS/EMOS) evaluated
+          by 15 listeners, 95% CI via t-test. <strong>Bold</strong> = best · <span class="ul">Underline</span> = second
+          best. All baselines synthesize segments independently and concatenate; our method generates the full utterance
+          in a single autoregressive pass.</p>
       </div>
 
       <!-- Duration Control -->
@@ -531,8 +526,8 @@
           </table>
         </div>
         <p class="results-note">↓ lower is better · ↑ higher is better · <strong>Bold</strong> = best · <span
-            class="ul">Underline</span> = second best.
-          Duration scaling factors: ×0.75, ×0.875, ×1.125, ×1.25. Emotion fixed to neutral.</p>
+            class="ul">Underline</span> = second best. Duration scaling factors: ×0.75, ×0.875, ×1.125, ×1.25. Emotion
+          fixed to neutral.</p>
       </div>
 
       <!-- Ablation -->
@@ -543,15 +538,17 @@
           the <strong>2D causal attention mask</strong>, <strong>Monotonic Stream Alignment (MSA)</strong>,
           <strong>local duration embedding steering</strong>, and <strong>global EOS logit modulation</strong>.
         </p>
-        <figure>
-          <!-- PLACEHOLDER: replace with imgs/ablation.png -->
-          <img src="imgs/ablation.png" alt="Fig. 5 — Ablation Study" />
-          <figcaption>
-            <strong>Fig. 5</strong> — Ablation results. Each variant removes one component of TED-TTS,
-            demonstrating the individual contribution of the 2D causal mask, MSA filtering,
-            duration embedding steering, and EOS logit modulation.
-          </figcaption>
-        </figure>
+        <!-- Ablation figure: 60% centred -->
+        <div class="fig-centered">
+          <figure class="fig-natural">
+            <img src="imgs/ablation.png" alt="Fig. 5 — Ablation Study" />
+            <figcaption>
+              <strong>Fig. 5</strong> — Ablation results. Each variant removes one component of TED-TTS,
+              demonstrating the individual contribution of the 2D causal mask, MSA filtering,
+              duration embedding steering, and EOS logit modulation.
+            </figcaption>
+          </figure>
+        </div>
       </div>
     </section>
 
