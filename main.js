@@ -1,523 +1,267 @@
-/* =============================================
-   TOKENS
-   ============================================= */
-:root {
-  color-scheme: light;
-  --bg: #f5f4f0;
-  --card: #ffffff;
-  --text: #1a1a18;
-  --muted: #6b6b65;
-  --border: #e2e0d8;
-  --accent: #1a4a8a;
-  --accent-lt: #e8eef7;
-  --tag-bg: #f0ede6;
-  --serif: 'Source Serif 4', Georgia, serif;
-  --sans: 'DM Sans', 'Helvetica Neue', sans-serif;
-  --mono: 'JetBrains Mono', monospace;
-  --radius: 14px;
-}
+const SEGMENT_COLORS = [
+  { text: "#b42318", bg: "#fff1f0" },
+  { text: "#096dd9", bg: "#e6f4ff" },
+  { text: "#7a1fa2", bg: "#f9f0ff" },
+  { text: "#237804", bg: "#f6ffed" },
+  { text: "#ad6800", bg: "#fffbe6" },
+  { text: "#c41d7f", bg: "#fff0f6" },
+];
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+const getSegmentColor = (index) => SEGMENT_COLORS[index % SEGMENT_COLORS.length];
 
-body {
-  font-family: var(--sans);
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.65;
-  text-align: justify;
-}
+const splitSegments = (text, delimiter) =>
+  text.split(delimiter).map((s) => s.trim()).filter(Boolean);
 
-/* =============================================
-   LAYOUT
-   ============================================= */
-.container { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
-main { padding: 36px 0 56px; }
+/* ── helpers ── */
+const el = (tag, cls, attrs = {}) => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  Object.entries(attrs).forEach(([k, v]) => (e[k] = v));
+  return e;
+};
 
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px 32px;
-  margin-bottom: 22px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.04);
-}
+/* single audio player row inside a card */
+const makeAudioRow = (label, src, isOurs = false) => {
+  const row = el("div", "ex-audio-row" + (isOurs ? " ex-audio-row--ours" : ""));
 
-.card h2 {
-  font-family: var(--serif);
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+  const lbl = el("div", "ex-row-label");
+  lbl.textContent = label;
+  row.appendChild(lbl);
 
-.section-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px; height: 24px;
-  border-radius: 6px;
-  background: var(--accent-lt);
-  color: var(--accent);
-  font-size: .72rem;
-  font-family: var(--mono);
-  font-weight: 600;
-  flex-shrink: 0;
-}
+  const audioWrap = el("div", "ex-row-player");
+  const audio = el("audio", null, { controls: true, preload: "none", src });
+  audioWrap.appendChild(audio);
+  row.appendChild(audioWrap);
 
-.section-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 18px;
-}
+  return row;
+};
 
-/* =============================================
-   HERO
-   ============================================= */
-.hero {
-  background: #fff;
-  border-bottom: 1px solid var(--border);
-  padding: 52px 0 40px;
-  text-align: center;
-}
-.hero-inner { max-width: 900px; }
+/* reference row — potentially multiple audios side by side with emotion colour tags */
+const makeRefRow = (referenceAudio, referenceText, emotionSequence) => {
+  const row = el("div", "ex-audio-row");
 
-.venue-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--accent);
-  color: #fff;
-  font-size: .78rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-  padding: 5px 16px;
-  border-radius: 999px;
-  margin-bottom: 18px;
-  text-transform: uppercase;
-}
+  const lbl = el("div", "ex-row-label");
+  lbl.textContent = referenceAudio ? "Reference" : "Text prompt";
+  row.appendChild(lbl);
 
-.tags {
-  display: flex;
-  gap: 7px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
+  const wrap = el("div", "ex-row-player ex-row-player--multi");
 
-.tag {
-  background: var(--tag-bg);
-  color: var(--muted);
-  font-size: .71rem;
-  font-weight: 600;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-  padding: 3px 11px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-}
+  if (referenceAudio) {
+    const emotions = emotionSequence
+      ? splitSegments(emotionSequence, "->")
+      : [];
+    Object.entries(referenceAudio).forEach(([key, src], i) => {
+      const unit = el("div", "ex-ref-unit");
+      if (emotions[i]) {
+        const tag = el("span", "ex-ref-tag");
+        tag.textContent = emotions[i];
+        tag.style.color = getSegmentColor(i).text;
+        unit.appendChild(tag);
+      }
+      const audio = el("audio", null, { controls: true, preload: "none", src });
+      unit.appendChild(audio);
+      wrap.appendChild(unit);
+    });
+  } else if (referenceText) {
+    Object.entries(referenceText).forEach(([key, text], i) => {
+      const unit = el("div", "ex-ref-unit ex-ref-unit--text");
+      unit.textContent = `"${text}"`;
+      unit.style.color = getSegmentColor(i).text;
+      wrap.appendChild(unit);
+    });
+  }
 
-.hero h1 {
-  font-family: var(--serif);
-  font-size: clamp(1.45rem, 3.2vw, 2.1rem);
-  font-weight: 600;
-  line-height: 1.32;
-  margin-bottom: 18px;
-}
+  row.appendChild(wrap);
+  return row;
+};
 
-.authors { font-size: .94rem; color: var(--text); margin-bottom: 6px; line-height: 2; }
-.authors sup { font-size: .68rem; vertical-align: super; }
-.affil-note { font-size: .82rem; color: var(--muted); margin-bottom: 24px; }
-
-.links-bar { display: flex; gap: 9px; justify-content: center; flex-wrap: wrap; }
-
-.link-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
-  border-radius: 8px;
-  font-size: .86rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all .14s;
-  border: 1.5px solid transparent;
-  cursor: pointer;
-  font-family: var(--sans);
-}
-.link-btn--primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-.link-btn--primary:hover { background: #0f3570; border-color: #0f3570; }
-.link-btn--ghost { background: #fff; color: var(--text); border-color: var(--border); }
-.link-btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
-
-/* =============================================
-   ABSTRACT
-   ============================================= */
-#abstract p { font-size: .96rem; color: #2a2a28; text-align: justify; line-height: 1.78; }
-
-/* =============================================
-   FIGURES — natural ratio, no forced heights
-   ============================================= */
-.fig-block { margin-top: 0; }
-.fig-block + .fig-block { margin-top: 22px; }
-
-.fig-block-title {
-  font-weight: 600;
-  font-size: .92rem;
-  color: var(--muted);
-  margin-bottom: 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
-}
-
-/* base figure style — no height constraint */
-.fig-natural {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  background: #fafaf8;
-}
-
-.fig-natural img {
-  width: 100%;
-  height: auto;      /* natural ratio */
-  display: block;
-}
-
-figcaption {
-  padding: 12px 16px 14px;
-  color: var(--muted);
-  font-size: .86rem;
-  line-height: 1.5;
-  border-top: 1px solid var(--border);
-  text-align: left;
-}
-
-/* Row 1: Fig 1 + Fig 3 side by side, each 48% */
-.fig-row-13 {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-.fig-row-13 .fig-natural {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-/* Row 2: Fig 2 centred at 80% */
-.fig-row-2 {
-  display: flex;
-  justify-content: center;
-}
-.fig-row-2 .fig-natural {
-  width: 80%;
-}
-
-/* Centred 60% wrapper — used for dataset + ablation */
-.fig-centered {
-  display: flex;
-  justify-content: center;
-  margin-top: 16px;
-}
-.fig-centered .fig-natural {
-  width: 60%;
-}
-
-/* =============================================
-   DATASET
-   ============================================= */
-.stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
-.stat-box { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 14px; text-align: center; }
-.stat-value { font-family: var(--serif); font-size: 1.75rem; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 5px; }
-.stat-label { font-size: .79rem; color: var(--muted); font-weight: 500; }
-.dataset-desc { font-size: .94rem; line-height: 1.72; margin-bottom: 14px; color: #2a2a28; }
-
-.schema-title { font-size: .88rem; font-weight: 600; margin-bottom: 8px; color: var(--text); }
-
-.schema-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin-bottom: 16px; }
-.schema-table th { background: #f0ede6; padding: 8px 16px; text-align: left; font-weight: 600; border: 1px solid var(--border); }
-.schema-table td { padding: 9px 16px; border: 1px solid var(--border); vertical-align: top; line-height: 1.55; }
-.schema-table td:first-child { font-family: var(--mono); font-size: .8rem; color: var(--accent); white-space: nowrap; width: 110px; }
-.schema-table td:nth-child(2) { color: var(--muted); font-size: .82rem; white-space: nowrap; width: 70px; }
-.schema-table tr:nth-child(even) td { background: #faf9f6; }
-
-.pipeline {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 14px 16px;
-  background: var(--tag-bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  margin-bottom: 16px;
-}
-.pip-step { flex: 1; min-width: 100px; text-align: center; padding: 6px 8px; }
-.pip-icon { font-size: 1.25rem; margin-bottom: 3px; }
-.pip-label { font-size: .76rem; font-weight: 600; }
-.pip-sub { font-size: .69rem; color: var(--muted); margin-top: 1px; }
-.pip-arrow { color: var(--muted); font-size: 1rem; padding: 0 2px; flex-shrink: 0; }
-
-.license-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: #fffbe6;
-  border: 1px solid #ffe58f;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: .86rem;
-  line-height: 1.6;
-  color: #614700;
-  margin-top: 16px;
-}
-.license-note a { color: #614700; font-weight: 600; }
-.license-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-
-/* =============================================
-   RESULTS TABS
-   ============================================= */
-.tab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
-.tab-btn {
-  padding: 7px 18px; border: none; background: none; cursor: pointer;
-  font-family: var(--sans); font-size: .87rem; font-weight: 600; color: var(--muted);
-  border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .14s;
-}
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-.results-wrap { overflow-x: auto; margin-bottom: 10px; }
-.subsection-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
-.ablation-desc { font-size: .94rem; color: #2a2a28; margin-bottom: 14px; line-height: 1.72; }
-
-.rtable { width: 100%; border-collapse: collapse; font-size: .85rem; }
-.rtable th {
-  background: #f0ede6; padding: 8px 12px; text-align: center;
-  font-weight: 600; border: 1px solid var(--border); white-space: nowrap; font-size: .8rem;
-}
-.rtable td { padding: 8px 12px; border: 1px solid var(--border); text-align: center; }
-.rtable tr:not(.ours):hover td { background: #faf9f6; }
-.th-left { text-align: left !important; padding-left: 14px !important; }
-.method-col { text-align: left; font-weight: 600; white-space: nowrap; padding-left: 14px; }
-.lang-cell {
-  background: #f8f6f0; font-size: .72rem; font-weight: 700; color: var(--muted);
-  text-align: center; letter-spacing: .05em; text-transform: uppercase;
-  writing-mode: vertical-lr; transform: rotate(180deg);
-  width: 26px; padding: 4px; border: 1px solid var(--border);
-}
-.rtable .ours td { background: #e8eef7 !important; font-weight: 700; }
-.best { color: var(--accent); font-weight: 700; }
-.ul { text-decoration: underline; }
-.results-note { font-size: .81rem; color: var(--muted); line-height: 1.6; margin-top: 8px; }
-
-/* =============================================
-   AUDIO EXAMPLES — card grid layout
-   ============================================= */
-.examples-block { margin-bottom: 28px; }
-.examples-block h3 { margin-bottom: 14px; font-size: 1.1rem; font-weight: 600; }
-.emotion-tables { display: grid; gap: 24px; }
-.emotion-table h4 { margin-bottom: 12px; font-size: 1rem; font-weight: 600; }
-.table-wrap { }
-
-.table-caption { margin-top: 10px; font-size: .85rem; line-height: 1.55; color: #6b7280; text-align: justify; }
-.caption-icon { margin-right: 6px; }
-.muted { color: var(--muted); font-size: .95rem; }
-
-/* 2×2 grid of sample cards */
-.samples-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-/* individual sample card */
-.ex-card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: var(--card);
-}
-
-/* emotion pill bar at top */
-.ex-emo-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  padding: 8px 14px;
-  background: var(--tag-bg);
-  border-bottom: 1px solid var(--border);
-}
-.ex-emo-pill {
-  font-size: .75rem;
-  font-weight: 600;
-  padding: 2px 10px;
-  border-radius: 999px;
-}
-.ex-emo-arrow {
-  font-size: .75rem;
-  color: var(--muted);
-}
+/* top emotion pill bar */
+const makeEmotionBar = (emotionSequence) => {
+  const bar = el("div", "ex-emo-bar");
+  if (!emotionSequence) return bar;
+  const emotions = splitSegments(emotionSequence, "->");
+  emotions.forEach((emo, i) => {
+    const pill = el("span", "ex-emo-pill");
+    pill.textContent = emo;
+    const c = getSegmentColor(i);
+    pill.style.color = c.text;
+    pill.style.background = c.bg;
+    bar.appendChild(pill);
+    if (i < emotions.length - 1) {
+      const arrow = el("span", "ex-emo-arrow");
+      arrow.textContent = "→";
+      bar.appendChild(arrow);
+    }
+  });
+  return bar;
+};
 
 /* coloured segmented text */
-.ex-text-row {
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border);
-  background: #fafaf8;
-}
-.ex-seg-text {
-  font-size: .85rem;
-  line-height: 1.6;
-  color: var(--text);
-}
-.ex-seg { font-weight: 600; }
-.ex-seg-div { color: var(--muted); margin: 0 3px; font-size: .8rem; }
+const makeSegmentedText = (text) => {
+  const wrap = el("div", "ex-seg-text");
+  if (!text) return wrap;
+  const segments = splitSegments(text, "|");
+  segments.forEach((seg, i) => {
+    const span = el("span", "ex-seg");
+    span.textContent = seg;
+    span.style.color = getSegmentColor(i).text;
+    wrap.appendChild(span);
+    if (i < segments.length - 1) {
+      const div = el("span", "ex-seg-div");
+      div.textContent = " / ";
+      wrap.appendChild(div);
+    }
+  });
+  return wrap;
+};
 
-/* duration highlight */
-.dur-hl { color: var(--text); }
-.dur-badge {
-  display: inline-block;
-  font-size: .72rem;
-  font-weight: 600;
-  background: #FAEEDA;
-  color: #633806;
-  border-radius: 999px;
-  padding: 1px 7px;
-  margin-left: 4px;
-  vertical-align: middle;
-}
+/* duration text with ×scale badges */
+const makeDurationText = (text) => {
+  const wrap = el("div", "ex-seg-text");
+  if (!text) { wrap.textContent = "-"; return wrap; }
+  const regex = /\[([^\]]+)\]/g;
+  let last = 0, match;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > last)
+      wrap.appendChild(document.createTextNode(text.slice(last, match.index)));
+    const content = match[1].trim();
+    const mMatch = content.match(/\(([^)]+)\)/);
+    const cleanText = content.replace(/\s*\([^)]*\)\s*/, " ").trim();
+    const hl = el("span", "dur-hl");
+    hl.appendChild(document.createTextNode(cleanText || content));
+    if (mMatch) {
+      const badge = el("span", "dur-badge");
+      const f = mMatch[1].match(/[\d.]+/);
+      badge.textContent = `×${f ? f[0] : mMatch[1]}`;
+      hl.appendChild(badge);
+    }
+    wrap.appendChild(hl);
+    last = regex.lastIndex;
+  }
+  if (last < text.length)
+    wrap.appendChild(document.createTextNode(text.slice(last)));
+  return wrap;
+};
 
-/* each audio row: label | player */
-.ex-audio-row {
-  display: grid;
-  grid-template-columns: 90px 1fr;
-  border-bottom: 1px solid var(--border);
-  align-items: stretch;
-  min-height: 44px;
-}
-.ex-audio-row:last-child { border-bottom: none; }
+/* build one sample card (emotion) */
+const buildEmotionCard = (item, mode) => {
+  const card = el("div", "ex-card");
 
-/* ours row — blue highlight */
-.ex-audio-row--ours {
-  background: #e8eef7;
-}
-.ex-audio-row--ours .ex-row-label {
-  color: var(--accent);
-  font-weight: 700;
-  border-right-color: #91caff;
-}
+  /* emotion pills */
+  if (item.emotion_sequence) {
+    card.appendChild(makeEmotionBar(item.emotion_sequence));
+  }
 
-.ex-row-label {
-  padding: 8px 10px;
-  font-size: .78rem;
-  font-weight: 600;
-  color: var(--muted);
-  border-right: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  background: transparent;
-}
+  /* text */
+  if (item.text) {
+    const textWrap = el("div", "ex-text-row");
+    textWrap.appendChild(makeSegmentedText(item.text));
+    card.appendChild(textWrap);
+  }
 
-.ex-row-player {
-  padding: 6px 10px;
-  display: flex;
-  align-items: center;
-}
-.ex-row-player audio {
-  width: 100%;
-  height: 32px;
-}
+  /* reference / text prompt row */
+  card.appendChild(makeRefRow(item.reference_audio, item.reference_text, item.emotion_sequence));
 
-/* reference row: multiple audios side by side */
-.ex-row-player--multi {
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.ex-ref-unit {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
-}
-.ex-ref-unit audio {
-  width: 100%;
-  height: 32px;
-}
-.ex-ref-tag {
-  font-size: .7rem;
-  font-weight: 600;
-  line-height: 1;
-}
+  /* ours */
+  if (item.output_audio) {
+    card.appendChild(makeAudioRow("Ours", item.output_audio, true));
+  }
 
-/* text prompt reference */
-.ex-ref-unit--text {
-  font-size: .75rem;
-  font-style: italic;
-  line-height: 1.5;
-  padding: 4px 0;
-  flex: 1;
-}
+  /* baselines */
+  if (item.baseline_audio) {
+    Object.entries(item.baseline_audio).forEach(([label, src]) => {
+      card.appendChild(makeAudioRow(label, src, false));
+    });
+  }
 
-/* =============================================
-   CITATION
-   ============================================= */
-.citation-lead { font-size: .92rem; color: var(--muted); margin-bottom: 13px; }
-.bibtex {
-  background: #1a1a18; color: #d4d0c8; border-radius: 10px;
-  padding: 20px 22px; font-family: var(--mono); font-size: .81rem;
-  line-height: 1.75; overflow-x: auto; position: relative;
-}
-.bibtex .kw { color: #7ec8e3; }
-.bibtex .val { color: #b5d99c; }
-.bibtex .key { color: #f9c97a; }
-.copy-btn {
-  position: absolute; top: 12px; right: 14px;
-  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
-  color: #d4d0c8; border-radius: 6px; padding: 3px 12px;
-  font-size: .74rem; cursor: pointer; font-family: var(--sans); transition: background .14s;
-}
-.copy-btn:hover { background: rgba(255,255,255,.2); }
+  return card;
+};
 
-/* =============================================
-   FOOTER
-   ============================================= */
-.footer { padding: 26px 0 38px; border-top: 1px solid var(--border); background: #fff; color: var(--muted); }
-.footer-inner {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; flex-wrap: wrap; font-size: .84rem;
-}
+/* build one sample card (duration) */
+const buildDurationCard = (item) => {
+  const card = el("div", "ex-card");
 
-code {
-  background: #f1f1f1; padding: 2px 6px; border-radius: 4px;
-  font-family: var(--mono); font-size: .85em;
-}
+  /* text with duration badges */
+  if (item.text) {
+    const textWrap = el("div", "ex-text-row");
+    textWrap.appendChild(makeDurationText(item.text));
+    card.appendChild(textWrap);
+  }
 
-/* =============================================
-   RESPONSIVE
-   ============================================= */
-@media (max-width: 820px) {
-  .hero h1 { font-size: 1.38rem; }
-  .card { padding: 20px 18px; }
-  .stat-row { grid-template-columns: 1fr 1fr; }
-  .footer-inner { flex-direction: column; text-align: center; }
-  .section-header { flex-direction: column; align-items: flex-start; }
+  /* timbre reference */
+  if (item.reference_audio) {
+    card.appendChild(makeAudioRow("Timbre Ref", item.reference_audio));
+  }
 
-  /* stack figures vertically on mobile */
-  .fig-row-13 { flex-direction: column; }
-  .fig-row-2 .fig-natural { width: 100%; }
-  .fig-centered .fig-natural { width: 90%; }
+  /* original */
+  if (item.original_audio) {
+    card.appendChild(makeAudioRow("Original", item.original_audio));
+  }
 
-  /* stack sample cards on mobile */
-  .samples-grid { grid-template-columns: 1fr; }
-}
+  /* ours */
+  if (item.output_audio) {
+    card.appendChild(makeAudioRow("Ours", item.output_audio, true));
+  }
 
-@media (max-width: 480px) {
-  .pipeline { flex-direction: column; }
-  .pip-arrow { transform: rotate(90deg); }
-  .stat-row { grid-template-columns: 1fr 1fr; }
-}
+  /* baselines */
+  if (item.baseline_audio) {
+    Object.entries(item.baseline_audio).forEach(([label, src]) => {
+      card.appendChild(makeAudioRow(label, src, false));
+    });
+  }
+
+  return card;
+};
+
+/* render emotion section into a container using 2×2 grid */
+const renderEmotionSection = (data, containerId) => {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  if (!data.length) {
+    const msg = el("p", "muted");
+    msg.textContent = "No examples found.";
+    container.appendChild(msg);
+    return;
+  }
+  const grid = el("div", "samples-grid");
+  data.forEach((item) => grid.appendChild(buildEmotionCard(item, item.mode)));
+  container.appendChild(grid);
+};
+
+/* render duration section */
+const renderDurationSection = (data) => {
+  const container = document.getElementById("duration-table");
+  container.innerHTML = "";
+  if (!data.length) {
+    const msg = el("p", "muted");
+    msg.textContent = "No examples found.";
+    container.appendChild(msg);
+    return;
+  }
+  const grid = el("div", "samples-grid");
+  data.forEach((item) => grid.appendChild(buildDurationCard(item)));
+  container.appendChild(grid);
+};
+
+const loadExamples = async () => {
+  try {
+    const response = await fetch("examples/data.json");
+    if (!response.ok) throw new Error(`Failed to load examples: ${response.status}`);
+    const data = await response.json();
+
+    const audioData = (data.emotion || []).filter((i) => i.mode === "audio");
+    const textData  = (data.emotion || []).filter((i) => i.mode === "text");
+
+    renderEmotionSection(audioData, "emotion-table-audio");
+    renderEmotionSection(textData,  "emotion-table-text");
+    renderDurationSection(data.duration || []);
+  } catch (error) {
+    ["emotion-table-audio", "emotion-table-text", "duration-table"].forEach((id) => {
+      const msg = el("p", "muted");
+      msg.textContent = `Unable to load examples/data.json: ${error.message}`;
+      document.getElementById(id).appendChild(msg);
+    });
+  }
+};
+
+loadExamples();

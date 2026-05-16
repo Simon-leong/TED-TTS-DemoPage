@@ -452,6 +452,7 @@ figcaption {
   font-size: .7rem;
   font-weight: 600;
   line-height: 1;
+  text-align: center;
 }
 
 /* text prompt reference */
