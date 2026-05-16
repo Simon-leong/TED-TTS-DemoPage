@@ -1,67 +1,579 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TED-TTS DemoPage</title>
+  <title>TED-TTS — ACL 2026</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=JetBrains+Mono:wght@400;600&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+    rel="stylesheet">
 </head>
+
 <body>
+
   <header class="hero">
-    <div class="container">
-      <p class="eyebrow">Training-Free · Intra-Utterance Control · Zero-Shot TTS</p>
-      <h1>TED-TTS: Training-Free Intra-Utterance Emotion and Duration Control for Text-to-Speech Synthesis</h1>
+    <div class="container hero-inner">
+      <div>
+        <span class="venue-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg>
+          ACL 2026 · Main Conference
+        </span>
+      </div>
+      <div class="tags">
+        <span class="tag">Training-Free</span>
+        <span class="tag">Intra-Utterance Control</span>
+        <span class="tag">Zero-Shot TTS</span>
+        <span class="tag">Emotion Control</span>
+        <span class="tag">Duration Control</span>
+      </div>
+      <h1>TED-TTS: Training-Free Intra-Utterance Emotion and<br>Duration Control for Text-to-Speech Synthesis</h1>
+      <p class="authors">
+        Qifan Liang<sup>*</sup>,&ensp;Yuansen Liu<sup>*</sup>,&ensp;Ruixin Wei<sup>*</sup>,&ensp;Nan Lu,&ensp;Junchuan
+        Zhao,&ensp;Ye Wang
+      </p>
+      <p class="affil-note">School of Computing, National University of Singapore &ensp;·&ensp; <sup>*</sup>Equal
+        contribution</p>
+      <div class="links-bar">
+        <a href="https://arxiv.org/abs/2601.03170" class="link-btn link-btn--primary" target="_blank">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>Paper
+        </a>
+        <a href="#" class="link-btn link-btn--ghost" target="_blank">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+              d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+          </svg>Code
+        </a>
+        <a href="#dataset" class="link-btn link-btn--ghost">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+          </svg>Dataset
+        </a>
+        <a href="#examples" class="link-btn link-btn--ghost">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          </svg>Audio Demo
+        </a>
+      </div>
     </div>
   </header>
 
   <main class="container">
+
+    <!-- §01 Abstract -->
     <section class="card" id="abstract">
-      <h2>Abstract</h2>
+      <h2><span class="section-num">01</span> Abstract</h2>
       <p>
-        While controllable Text-to-Speech (TTS) has achieved notable progress, most existing methods remain limited to inter-utterance-level control, 
-        making fine-grained intra-utterance expression challenging due to their reliance on non-public datasets or complex multi-stage training. 
-        In this paper, we propose TED-TTS, a training-free controllable framework for pretrained zero-shot TTS to enable intra-utterance emotion and duration expression. 
-        Specifically, we propose a segment-aware emotion conditioning strategy that combines causal masking with monotonic stream alignment filtering to isolate emotion conditioning and schedule mask transitions, 
-        enabling smooth intra-utterance emotion shifts while preserving global semantic coherence. Based on this, 
-        we further propose a segment-aware duration steering strategy to combine local duration embedding steering with global EOS logit modulation, 
-        allowing local duration adjustment while ensuring globally consistent termination. To eliminate the need for segment-level manual prompt engineering, 
-        we construct a 30,000-sample multi-emotion and duration-annotated text dataset to enable LLM-based automatic prompt construction. 
-        Extensive experiments demonstrate that our training-free method not only achieves state-of-the-art intra-utterance consistency in multi-emotion and duration control, 
-        but also maintains baseline-level speech quality of the underlying TTS model.
+        While controllable Text-to-Speech (TTS) has achieved notable progress, most existing methods remain limited to
+        inter-utterance-level control,
+        making fine-grained intra-utterance expression challenging due to their reliance on non-public datasets or
+        complex multi-stage training.
+        In this paper, we propose <strong>TED-TTS</strong>, a training-free controllable framework for pretrained
+        zero-shot TTS to enable intra-utterance emotion and duration expression.
+        Specifically, we propose a <em>segment-aware emotion conditioning</em> strategy that combines causal masking
+        with monotonic stream alignment filtering to isolate emotion conditioning and schedule mask transitions,
+        enabling smooth intra-utterance emotion shifts while preserving global semantic coherence.
+        Based on this, we further propose a <em>segment-aware duration steering</em> strategy combining local duration
+        embedding steering with global EOS logit modulation,
+        allowing local duration adjustment while ensuring globally consistent termination.
+        To eliminate the need for segment-level manual prompt engineering, we construct a <strong>30,000-sample</strong>
+        multi-emotion and duration-annotated text dataset (MED-TTS) to enable LLM-based automatic prompt construction.
+        Extensive experiments demonstrate that our training-free method achieves state-of-the-art intra-utterance
+        consistency in multi-emotion and duration control,
+        while maintaining baseline-level speech quality of the underlying TTS model.
       </p>
     </section>
 
-  <section class="card" id="figures">
-    <h2>Framework Overview</h2>
+    <!-- §02 Framework Overview -->
+    <section class="card" id="figures">
+      <h2><span class="section-num">02</span> Framework Overview</h2>
 
-    <details open class="figure-block">
-      <summary>Task Definition (Left) and Technical Architecture Overview (Right)</summary>
+      <!-- Fig 1 & 2 -->
+      <div class="fig-block">
+        <p class="fig-block-title">Task Definition &amp; Architecture Overview (Fig. 1 &amp; 2)</p>
+        <div class="figure-grid">
+          <figure>
+            <!-- PLACEHOLDER: replace src with imgs/intro.png -->
+            <div class="img-placeholder">
+              <span class="img-placeholder-label">Fig. 1 — Task Definition</span>
+              <span class="img-placeholder-hint">imgs/intro.png</span>
+            </div>
+            <figcaption>
+              <strong>Fig. 1</strong> — Overview of our training-free framework for intra-utterance emotion and duration
+              control,
+              where the <span style="color:#237804;font-weight:600;">green</span>, <span
+                style="color:#b42318;font-weight:600;">red</span>, and <span
+                style="color:#096dd9;font-weight:600;">blue</span>
+              regions denote three segments with different emotion and duration settings within the same utterance.
+            </figcaption>
+          </figure>
+          <figure>
+            <!-- PLACEHOLDER: replace with imgs/Method.png -->
+            <div class="img-placeholder">
+              <span class="img-placeholder-label">Fig. 2 — Architecture Overview</span>
+              <span class="img-placeholder-hint">imgs/Method.png</span>
+            </div>
+            <figcaption>
+              <strong>Fig. 2</strong> — Illustration of the segment transition from the <span
+                style="color:#b42318;font-weight:600;">red</span> to the <span
+                style="color:#096dd9;font-weight:600;">blue</span> segment
+              via segment-aware duration steering (left) and segment-aware emotion conditioning (right).
+            </figcaption>
+          </figure>
+        </div>
+      </div>
 
-      <div class="figure-grid">
+      <!-- Fig 3 -->
+      <div class="fig-block">
+        <p class="fig-block-title">Monotonic Stream Alignment Detail (Fig. 3)</p>
         <figure>
-          <img src="imgs/intro.png" alt="Task Definition" />
+          <!-- PLACEHOLDER: replace with imgs/fig3.png -->
+          <div class="img-placeholder">
+            <span class="img-placeholder-label">Fig. 3 — Monotonic Stream Alignment</span>
+            <span class="img-placeholder-hint">imgs/MSA.png</span>
+          </div>
           <figcaption>
-          Overview of our training-free framework for intra-utterance emotion and duration control, 
-          where the <span style="color: #237804; font-weight:600;">green</span>, <span style="color: #b42318; font-weight:600;">red</span>, and <span style="color: #096dd9; font-weight:600;">blue</span> regions denote three segments with different emotion 
-          and duration settings within the same utterance.
-          </figcaption>
-        </figure>
-
-        <figure>
-          <img src="imgs/Method.png" alt="Detailed illustration of Monotonic Stream Alignment" />
-          <figcaption>
-          Overview of our training-free framework for fine-grained intra-utterance emotion and duration control, 
-          illustrating the transition from the second (<span style="color: #b42318; font-weight:600;">red</span>) segment to the third (<span style="color: #096dd9; font-weight:600;">blue</span>) segment via segment-aware duration steering (left) 
-          and segment-aware emotion conditioning (right) strategy.
+            <strong>Fig. 3</strong> — Detailed illustration of the MSA algorithm in segment-aware emotion conditioning.
+            From top to bottom: the MSA algorithm, alignment result, and 2D causal attention mask visualization.
+            MSA tracks a Bayesian belief distribution over text positions at each decoding step to enable accurate mask
+            transition scheduling.
           </figcaption>
         </figure>
       </div>
-    </details>
-  </section>
+    </section>
 
+    <!-- §03 Dataset -->
+    <section class="card" id="dataset">
+      <h2><span class="section-num">03</span> Dataset — MED-TTS</h2>
+
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-value">30K</div>
+          <div class="stat-label">Total Samples</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">7</div>
+          <div class="stat-label">Emotion Categories</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">2–3</div>
+          <div class="stat-label">Segments per Sample</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">EN + ZH</div>
+          <div class="stat-label">Languages</div>
+        </div>
+      </div>
+
+      <p class="dataset-desc">
+        To eliminate the need for segment-level manual prompt engineering, we construct <strong>MED-TTS</strong>,
+        a Multi-Emotion and Duration-annotated Text dataset with 30,000 samples covering English and Chinese.
+        MED-TTS supports two prompting modalities: (a) <strong>Speech-referenced</strong> — audio clips matched to
+        target emotion and speaker; and
+        (b) <strong>Text-referenced</strong> — natural language descriptions of the desired emotional expression.
+      </p>
+
+      <p class="schema-title">Dataset schema — each sample contains:</p>
+      <table class="schema-table">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>sample_id</td>
+            <td>string</td>
+            <td>Unique sample identifier (e.g. <code>en_000000</code>).</td>
+          </tr>
+          <tr>
+            <td>meta</td>
+            <td>object</td>
+            <td>Language (<code>en</code>/<code>zh</code>), text category, annotation type, and generation model.</td>
+          </tr>
+          <tr>
+            <td>utterance</td>
+            <td>object</td>
+            <td>Full utterance text and the ordered emotion flow sequence across segments.</td>
+          </tr>
+          <tr>
+            <td>segments</td>
+            <td>list</td>
+            <td>Per-segment text span, emotion label, natural language emotion description, duration estimate (seconds),
+              and start/end timestamps.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pipeline">
+        <div class="pip-step">
+          <div class="pip-icon">📝</div>
+          <div class="pip-label">Content Generation</div>
+          <div class="pip-sub">GPT-4o · EN &amp; ZH</div>
+        </div>
+        <span class="pip-arrow">→</span>
+        <div class="pip-step">
+          <div class="pip-icon">✂️</div>
+          <div class="pip-label">Segmentation &amp; Annotation</div>
+          <div class="pip-sub">DeepSeek-Chat</div>
+        </div>
+        <span class="pip-arrow">→</span>
+        <div class="pip-step">
+          <div class="pip-icon">✅</div>
+          <div class="pip-label">Verification</div>
+          <div class="pip-sub">Auto + Manual</div>
+        </div>
+        <span class="pip-arrow">→</span>
+        <div class="pip-step">
+          <div class="pip-icon">🎙️</div>
+          <div class="pip-label">LLM Fine-tuning</div>
+          <div class="pip-sub">Qwen3-8B + LoRA</div>
+        </div>
+      </div>
+
+      <!-- Fig 5 -->
+      <figure>
+        <!-- PLACEHOLDER: replace with imgs/fig5.png -->
+        <div class="img-placeholder">
+          <span class="img-placeholder-label">Fig. 4 — Dataset Statistics &amp; Distribution</span>
+          <span class="img-placeholder-hint">imgs/dataset.png</span>
+        </div>
+        <figcaption>
+          <strong>Fig. 4</strong> — MED-TTS statistics: emotion category distribution, segment count distribution, and
+          language breakdown.
+        </figcaption>
+      </figure>
+
+      <div class="license-note">
+        <span class="license-icon">⚠️</span>
+        <div>
+          <strong>License: <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC
+              4.0</a></strong><br>
+          MED-TTS is released for <strong>non-commercial research purposes only</strong>.
+          The dataset was synthetically constructed using large language models (GPT-4o, DeepSeek-Chat);
+          any use must cite our paper and comply with the terms of service of the respective LLM providers.
+        </div>
+      </div>
+
+      <p style="margin-top:14px;">
+        <a href="#" class="link-btn link-btn--ghost" style="display:inline-flex;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          &nbsp;Download MED-TTS
+        </a>
+      </p>
+    </section>
+
+    <!-- §04 Results + Ablation -->
+    <section class="card" id="results">
+      <h2><span class="section-num">04</span> Results &amp; Ablation</h2>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab(event,'tab-emo')">Emotion Control</button>
+        <button class="tab-btn" onclick="switchTab(event,'tab-dur')">Duration Control</button>
+        <button class="tab-btn" onclick="switchTab(event,'tab-abl')">Ablation Study</button>
+      </div>
+
+      <!-- Emotion Control -->
+      <div id="tab-emo" class="tab-panel active">
+        <p class="subsection-title">Table 1 — Emotion Control (Speech Emotion Prompt)</p>
+        <div class="results-wrap">
+          <table class="rtable">
+            <thead>
+              <tr>
+                <th colspan="2" class="th-left">Model</th>
+                <th>WER/CER↓</th>
+                <th>SSIM↑</th>
+                <th>OVRL↑</th>
+                <th>SMOS↑</th>
+                <th>NMOS↑</th>
+                <th>EMOS↑</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="lang-cell" rowspan="6">EN</td>
+                <td class="method-col">MaskGCT</td>
+                <td>3.520</td>
+                <td>0.347</td>
+                <td>3.275</td>
+                <td>2.96<sub>±0.34</sub></td>
+                <td>2.77<sub>±0.28</sub></td>
+                <td class="ul">3.64<sub>±0.24</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">F5TTS</td>
+                <td>2.632</td>
+                <td>0.353</td>
+                <td>3.330</td>
+                <td>3.33<sub>±0.36</sub></td>
+                <td class="ul">3.40<sub>±0.32</sub></td>
+                <td>3.56<sub>±0.28</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">SparkTTS</td>
+                <td class="ul">2.433</td>
+                <td>0.358</td>
+                <td class="best">3.404</td>
+                <td class="ul">3.49<sub>±0.29</sub></td>
+                <td>3.27<sub>±0.31</sub></td>
+                <td>3.44<sub>±0.29</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">CosyVoice2</td>
+                <td class="best">1.411</td>
+                <td>0.402</td>
+                <td>3.316</td>
+                <td>3.33<sub>±0.31</sub></td>
+                <td>2.87<sub>±0.32</sub></td>
+                <td>3.31<sub>±0.28</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">IndexTTS2</td>
+                <td>2.454</td>
+                <td class="ul">0.457</td>
+                <td>3.304</td>
+                <td>3.20<sub>±0.36</sub></td>
+                <td>2.98<sub>±0.30</sub></td>
+                <td class="best">4.07<sub>±0.26</sub></td>
+              </tr>
+              <tr class="ours">
+                <td class="method-col">Ours</td>
+                <td>2.519</td>
+                <td class="best">0.485</td>
+                <td class="ul">3.395</td>
+                <td class="best">4.00<sub>±0.24</sub></td>
+                <td class="best">4.20<sub>±0.23</sub></td>
+                <td>3.42<sub>±0.30</sub></td>
+              </tr>
+              <tr>
+                <td class="lang-cell" rowspan="6">ZH</td>
+                <td class="method-col">MaskGCT</td>
+                <td>7.221</td>
+                <td>0.350</td>
+                <td>3.278</td>
+                <td>2.80<sub>±0.34</sub></td>
+                <td>2.33<sub>±0.31</sub></td>
+                <td>3.64<sub>±0.27</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">F5TTS</td>
+                <td>10.317</td>
+                <td>0.324</td>
+                <td>3.228</td>
+                <td>3.22<sub>±0.36</sub></td>
+                <td>2.49<sub>±0.38</sub></td>
+                <td>3.13<sub>±0.28</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">SparkTTS</td>
+                <td class="best">3.107</td>
+                <td>0.382</td>
+                <td class="ul">3.345</td>
+                <td class="ul">3.42<sub>±0.33</sub></td>
+                <td>2.87<sub>±0.31</sub></td>
+                <td class="ul">3.80<sub>±0.24</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">CosyVoice2</td>
+                <td class="ul">3.375</td>
+                <td class="ul">0.423</td>
+                <td>3.313</td>
+                <td>3.04<sub>±0.35</sub></td>
+                <td>2.71<sub>±0.37</sub></td>
+                <td>3.29<sub>±0.29</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">IndexTTS2</td>
+                <td>4.015</td>
+                <td>0.401</td>
+                <td>3.289</td>
+                <td>3.67<sub>±0.33</sub></td>
+                <td class="ul">3.02<sub>±0.30</sub></td>
+                <td class="best">3.87<sub>±0.24</sub></td>
+              </tr>
+              <tr class="ours">
+                <td class="method-col">Ours</td>
+                <td>3.792</td>
+                <td class="best">0.470</td>
+                <td class="best">3.370</td>
+                <td class="best">4.13<sub>±0.23</sub></td>
+                <td class="best">4.07<sub>±0.30</sub></td>
+                <td>3.62<sub>±0.32</sub></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="results-note">↓ lower is better · ↑ higher is better · Subjective scores (SMOS/NMOS/EMOS) evaluated by
+          15 listeners, 95% CI via t-test.
+          <strong>Bold</strong> = best · <span class="ul">Underline</span> = second best.
+          All baselines synthesize segments independently and concatenate; our method generates the full utterance in a
+          single autoregressive pass.
+        </p>
+      </div>
+
+      <!-- Duration Control -->
+      <div id="tab-dur" class="tab-panel">
+        <p class="subsection-title">Table 2 — Duration Control (Speech Emotion Prompt)</p>
+        <div class="results-wrap">
+          <table class="rtable">
+            <thead>
+              <tr>
+                <th colspan="2" class="th-left">Model</th>
+                <th>WER/CER↓</th>
+                <th>DNSM↑</th>
+                <th>SSIM↑</th>
+                <th>NISQA↑</th>
+                <th>OVRL↑</th>
+                <th>SMOS↑</th>
+                <th>NMOS↑</th>
+                <th>SPMOS↑</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="lang-cell" rowspan="4">EN</td>
+                <td class="method-col">MaskGCT</td>
+                <td class="ul">2.482</td>
+                <td class="ul">3.964</td>
+                <td>0.539</td>
+                <td>4.536</td>
+                <td>3.301</td>
+                <td class="ul">4.00<sub>±0.32</sub></td>
+                <td>3.42<sub>±0.38</sub></td>
+                <td>3.47<sub>±0.31</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">F5TTS</td>
+                <td class="best">1.941</td>
+                <td>3.683</td>
+                <td class="ul">0.543</td>
+                <td class="ul">4.454</td>
+                <td class="ul">3.307</td>
+                <td>3.76<sub>±0.32</sub></td>
+                <td>3.02<sub>±0.42</sub></td>
+                <td>3.24<sub>±0.32</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">IndexTTS2</td>
+                <td>2.597</td>
+                <td>3.899</td>
+                <td class="best">0.575</td>
+                <td class="best">4.604</td>
+                <td>3.273</td>
+                <td>3.89<sub>±0.33</sub></td>
+                <td class="ul">3.87<sub>±0.32</sub></td>
+                <td class="best">3.67<sub>±0.37</sub></td>
+              </tr>
+              <tr class="ours">
+                <td class="method-col">Ours</td>
+                <td>3.227</td>
+                <td class="best">3.988</td>
+                <td>0.532</td>
+                <td>4.766</td>
+                <td class="best">3.336</td>
+                <td class="best">4.22<sub>±0.22</sub></td>
+                <td class="best">4.20<sub>±0.25</sub></td>
+                <td class="ul">3.62<sub>±0.34</sub></td>
+              </tr>
+              <tr>
+                <td class="lang-cell" rowspan="4">ZH</td>
+                <td class="method-col">MaskGCT</td>
+                <td>8.140</td>
+                <td>3.711</td>
+                <td class="best">0.614</td>
+                <td class="ul">4.366</td>
+                <td>3.167</td>
+                <td>3.31<sub>±0.40</sub></td>
+                <td>2.60<sub>±0.39</sub></td>
+                <td class="ul">3.02<sub>±0.31</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">F5TTS</td>
+                <td>9.004</td>
+                <td>3.386</td>
+                <td class="ul">0.598</td>
+                <td>4.286</td>
+                <td>3.204</td>
+                <td class="ul">3.82<sub>±0.35</sub></td>
+                <td>2.59<sub>±0.40</sub></td>
+                <td>2.89<sub>±0.36</sub></td>
+              </tr>
+              <tr>
+                <td class="method-col">IndexTTS2</td>
+                <td class="best">1.623</td>
+                <td class="ul">3.715</td>
+                <td>0.597</td>
+                <td>4.345</td>
+                <td class="ul">3.248</td>
+                <td>3.76<sub>±0.34</sub></td>
+                <td class="ul">3.27<sub>±0.34</sub></td>
+                <td>2.84<sub>±0.38</sub></td>
+              </tr>
+              <tr class="ours">
+                <td class="method-col">Ours</td>
+                <td class="ul">2.732</td>
+                <td class="best">3.803</td>
+                <td>0.578</td>
+                <td class="best">4.536</td>
+                <td class="best">3.291</td>
+                <td class="best">3.98<sub>±0.28</sub></td>
+                <td class="best">4.16<sub>±0.27</sub></td>
+                <td class="best">3.62<sub>±0.30</sub></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="results-note">↓ lower is better · ↑ higher is better · <strong>Bold</strong> = best · <span
+            class="ul">Underline</span> = second best.
+          Duration scaling factors: ×0.75, ×0.875, ×1.125, ×1.25. Emotion fixed to neutral.</p>
+      </div>
+
+      <!-- Ablation -->
+      <div id="tab-abl" class="tab-panel">
+        <p class="subsection-title">Ablation Study (Fig. 5)</p>
+        <p class="ablation-desc">
+          We ablate each component of TED-TTS to validate their individual contributions:
+          the <strong>2D causal attention mask</strong>, <strong>Monotonic Stream Alignment (MSA)</strong>,
+          <strong>local duration embedding steering</strong>, and <strong>global EOS logit modulation</strong>.
+        </p>
+        <figure>
+          <!-- PLACEHOLDER: replace with imgs/ablation.png -->
+          <div class="img-placeholder">
+            <span class="img-placeholder-label">Fig. 5 — Ablation Study</span>
+            <span class="img-placeholder-hint">imgs/ablation.png</span>
+          </div>
+          <figcaption>
+            <strong>Fig. 5</strong> — Ablation results. Each variant removes one component of TED-TTS,
+            demonstrating the individual contribution of the 2D causal mask, MSA filtering,
+            duration embedding steering, and EOS logit modulation.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- §05 Audio Examples -->
     <section class="card" id="examples">
       <div class="section-header">
-        <h2>Audio Examples</h2>
+        <h2><span class="section-num">05</span> Audio Examples</h2>
       </div>
 
       <div class="examples-block">
@@ -71,33 +583,33 @@
             <h4>(a) Speech-Referenced Emotion Prompt</h4>
             <div id="emotion-table-audio" class="table-wrap"></div>
           </div>
-            <p class="table-caption">
-                <span class="caption-icon">💡</span>
-            The above audio samples present comparative results for intra-utterance multi-emotion control using speech-referenced emotion prompts.
-            Since comparative methods lack intra-utterance controllability, all segments are synthesized
-            independently and concatenated for evaluation.
+          <p class="table-caption">
+            <span class="caption-icon">💡</span>
+            The above audio samples present comparative results for intra-utterance multi-emotion control using
+            speech-referenced emotion prompts.
+            Since comparative methods lack intra-utterance controllability, all segments are synthesized independently
+            and concatenated for evaluation.
             <u>Our method demonstrates smooth and coherent emotion transitions within a single utterance,
-            along with consistent speaker similarity across segments, where subtle breath sounds at
-            segment boundaries can also be perceived.</u>
-            Although baseline methods show strong emotion preservation at the segment level, this advantage
-            largely stems from their independent segment synthesis setting.
+              along with consistent speaker similarity across segments, where subtle breath sounds at segment boundaries
+              can also be perceived.</u>
+            Although baseline methods show strong emotion preservation at the segment level, this advantage largely
+            stems from their independent segment synthesis setting.
             In contrast, our method <u>performs multi-segment emotion control within a single generation</u>,
-            which makes emotion category preservation more challenging but better reflects realistic
-            controllable speech synthesis scenarios.
-            </p>
+            which makes emotion category preservation more challenging but better reflects realistic controllable speech
+            synthesis scenarios.
+          </p>
           <div class="emotion-table">
             <h4>(b) Text-Referenced Emotion Prompt</h4>
             <div id="emotion-table-text" class="table-wrap"></div>
             <p class="table-caption">
-               <span class="caption-icon">💡</span>
-            The above audio samples present comparative results for intra-utterance multi-emotion control
-              using text-referenced emotion prompts.
-              Compared with speech-based emotion prompting, extracting emotion cues from natural language
-              descriptions is considerably more challenging.
+              <span class="caption-icon">💡</span>
+              The above audio samples present comparative results for intra-utterance multi-emotion control using
+              text-referenced emotion prompts.
+              Compared with speech-based emotion prompting, extracting emotion cues from natural language descriptions
+              is considerably more challenging.
               Despite this increased difficulty, our method still demonstrates
-              <u>smooth intra-utterance emotion transitions,
-              consistent speaker timbre across segments, and
-              strong multi-emotion controllability within a single utterance.</u>
+              <u>smooth intra-utterance emotion transitions, consistent speaker timbre across segments, and strong
+                multi-emotion controllability within a single utterance.</u>
             </p>
           </div>
         </div>
@@ -106,29 +618,67 @@
       <div class="examples-block">
         <h3>2. Intra-Utterance Duration Control</h3>
         <div id="duration-table" class="table-wrap"></div>
-            <p class="table-caption">
-               <span class="caption-icon">💡</span>
-                The above audio samples present comparative results for intra-utterance duration control using speech-referenced emotion prompts.
-                  For duration control experiments, the emotion category is fixed to neutral,
-                  and segment-level speech synthesis is evaluated under four duration scaling
-                  factors (×0.75, ×0.875, ×1.125, and ×1.25).
-                  The results show that, after extending controllability to duration,
-                  <u>our method consistently preserves smooth intra-utterance transitions and
-                  coherent speaker timbre across segments.
-                  Moreover, our framework enables flexible duration adjustment for a target
-                  segment while keeping other segments unchanged, demonstrating strong
-                  training-free controllability within an autoregressive TTS framework.</u>
-            </p>
+        <p class="table-caption">
+          <span class="caption-icon">💡</span>
+          The above audio samples present comparative results for intra-utterance duration control using
+          speech-referenced emotion prompts.
+          For duration control experiments, the emotion category is fixed to neutral,
+          and segment-level speech synthesis is evaluated under four duration scaling factors (×0.75, ×0.875, ×1.125,
+          and ×1.25).
+          The results show that, after extending controllability to duration,
+          <u>our method consistently preserves smooth intra-utterance transitions and coherent speaker timbre across
+            segments.
+            Moreover, our framework enables flexible duration adjustment for a target segment while keeping other
+            segments unchanged,
+            demonstrating strong training-free controllability within an autoregressive TTS framework.</u>
+        </p>
       </div>
     </section>
+
+    <!-- §06 Citation -->
+    <section class="card" id="citation">
+      <h2><span class="section-num">06</span> Citation</h2>
+      <p class="citation-lead">If you find TED-TTS useful, please cite our ACL 2026 paper:</p>
+      <div class="bibtex" id="bibtex-block">
+        <button class="copy-btn" onclick="copyBibtex()">Copy</button>
+        <pre><span class="kw">@inproceedings</span>{<span class="val">liang2026tedtts</span>,
+  <span class="key">title</span>     = {Segment-Aware Conditioning for Training-Free Intra-Utterance
+               Emotion and Duration Control in Text-to-Speech},
+  <span class="key">author</span>    = {Liang, Qifan and Liu, Yuansen and Wei, Ruixin and
+               Lu, Nan and Zhao, Junchuan and Wang, Ye},
+  <span class="key">booktitle</span> = {Proceedings of the 64th Annual Meeting of the
+               Association for Computational Linguistics (ACL 2026)},
+  <span class="key">year</span>      = {2026}
+}</pre>
+      </div>
+    </section>
+
   </main>
 
   <footer class="footer">
-    <div class="container">
-      <p>© 2025 TED-TTS: Training-Free Intra-Utterance Emotion and Duration Control for Text-to-Speech Synthesis.</p>
+    <div class="container footer-inner">
+      <span>© 2026 TED-TTS Authors · National University of Singapore</span>
+      <span>Published at <strong>ACL 2026 Main Conference</strong></span>
     </div>
   </footer>
 
   <script src="main.js"></script>
+  <script>
+    function switchTab(e, id) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      e.target.classList.add('active');
+    }
+    function copyBibtex() {
+      const text = document.getElementById('bibtex-block').querySelector('pre').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+      });
+    }
+  </script>
 </body>
+
 </html>
