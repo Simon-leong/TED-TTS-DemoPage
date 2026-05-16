@@ -54,15 +54,17 @@ const createSegmentedSequence = (segments, options = {}) => {
   wrapper.className = "segment-sequence";
 
   segments.forEach((segment, index) => {
-    wrapper.appendChild(createSegmentPill(segment, index, pillClass));
-    if (index < segments.length - 1) {
-      wrapper.appendChild(document.createElement("br"));
-      const divider = document.createElement("span");
-      divider.className = "segment-separator";
-      divider.textContent = separator;
-      wrapper.appendChild(divider);
-      wrapper.appendChild(document.createElement("br"));
-    }
+  wrapper.appendChild(createSegmentPill(segment, index, pillClass));
+  if (index < segments.length - 1) {
+    wrapper.appendChild(document.createElement("br"));
+
+    const divider = document.createElement("span");
+    divider.className = "segment-separator";
+    divider.textContent = separator;
+    wrapper.appendChild(divider);
+
+    wrapper.appendChild(document.createElement("br"));
+  }
   });
 
   return wrapper;
@@ -122,10 +124,13 @@ const renderDurationText = (text) => {
       badge.className = "duration-badge";
       const factorMatch = multiplierMatch[1].match(/[\d.]+/);
       const factor = factorMatch ? factorMatch[0] : multiplierMatch[1];
+
       badge.textContent = `⏱ Duration ×${factor}`;
       badge.title = "Duration scaling factor";
+
       highlight.appendChild(badge);
     }
+
 
     wrapper.appendChild(highlight);
     lastIndex = regex.lastIndex;
@@ -213,10 +218,16 @@ const renderEmotionTable = ({ data, containerId, promptLabel }) => {
 
     const referenceCell = document.createElement("td");
     if (item.reference_audio) {
-      const entries = Object.entries(item.reference_audio).map(([label, src]) => ({ label, src }));
+      const entries = Object.entries(item.reference_audio).map(([label, src]) => ({
+        label,
+        src,
+      }));
       referenceCell.appendChild(renderAudioList(entries));
     } else if (item.reference_text) {
-      const entries = Object.entries(item.reference_text).map(([label, text]) => ({ label, text }));
+      const entries = Object.entries(item.reference_text).map(([label, text]) => ({
+        label,
+        text,
+      }));
       referenceCell.appendChild(renderTextList(entries));
     } else {
       referenceCell.textContent = "-";
@@ -231,7 +242,10 @@ const renderEmotionTable = ({ data, containerId, promptLabel }) => {
 
     const baselineCell = document.createElement("td");
     if (item.baseline_audio) {
-      const entries = Object.entries(item.baseline_audio).map(([label, src]) => ({ label, src }));
+      const entries = Object.entries(item.baseline_audio).map(([label, src]) => ({
+        label,
+        src,
+      }));
       baselineCell.appendChild(renderAudioList(entries));
     } else {
       baselineCell.textContent = "-";
@@ -246,10 +260,18 @@ const renderEmotionTable = ({ data, containerId, promptLabel }) => {
 
 const renderEmotionExamples = (data) => {
   const audioData = data.filter((item) => item.mode === "audio");
-  const textData  = data.filter((item) => item.mode === "text");
+  const textData = data.filter((item) => item.mode === "text");
 
-  renderEmotionTable({ data: audioData, containerId: "emotion-table-audio", promptLabel: "Speech prompt" });
-  renderEmotionTable({ data: textData,  containerId: "emotion-table-text",  promptLabel: "Text prompt" });
+  renderEmotionTable({
+    data: audioData,
+    containerId: "emotion-table-audio",
+    promptLabel: "Speech prompt",
+  });
+  renderEmotionTable({
+    data: textData,
+    containerId: "emotion-table-text",
+    promptLabel: "Text prompt",
+  });
 };
 
 const renderDurationExamples = (data) => {
@@ -273,14 +295,18 @@ const renderDurationExamples = (data) => {
 
     const referenceCell = document.createElement("td");
     if (item.reference_audio) {
-      referenceCell.appendChild(renderAudioList([{ label: "Reference", src: item.reference_audio }]));
+      referenceCell.appendChild(
+        renderAudioList([{ label: "Reference", src: item.reference_audio }])
+      );
     } else {
       referenceCell.textContent = "-";
     }
 
     const originalCell = document.createElement("td");
     if (item.original_audio) {
-      originalCell.appendChild(renderAudioList([{ label: "Original", src: item.original_audio }]));
+      originalCell.appendChild(
+        renderAudioList([{ label: "Original", src: item.original_audio }])
+      );
     } else {
       originalCell.textContent = "-";
     }
@@ -294,7 +320,10 @@ const renderDurationExamples = (data) => {
 
     const baselineCell = document.createElement("td");
     if (item.baseline_audio) {
-      const entries = Object.entries(item.baseline_audio).map(([label, src]) => ({ label, src }));
+      const entries = Object.entries(item.baseline_audio).map(([label, src]) => ({
+        label,
+        src,
+      }));
       baselineCell.appendChild(renderAudioList(entries));
     } else {
       baselineCell.textContent = "-";
@@ -319,9 +348,8 @@ const loadExamples = async () => {
     renderDurationExamples(data.duration || []);
   } catch (error) {
     const emotionAudioContainer = document.getElementById("emotion-table-audio");
-    const emotionTextContainer  = document.getElementById("emotion-table-text");
-    const durationContainer     = document.getElementById("duration-table");
-
+    const emotionTextContainer = document.getElementById("emotion-table-text");
+    const durationContainer = document.getElementById("duration-table");
     const message = document.createElement("p");
     message.className = "muted";
     message.textContent = `Unable to load examples/data.json: ${error.message}`;
